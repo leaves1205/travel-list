@@ -2,6 +2,7 @@ import { useState } from "react";
 
 export default function App() {
   const [items, setItems] = useState([]);
+  const packedItems = items.filter((item) => item.packed).length;
   function handleAddItem(item) {
     setItems((items) => [...items, item]);
   }
@@ -24,11 +25,36 @@ export default function App() {
         onDeleteItem={handleDeleteItem}
         onToggleItem={handleToggleItem}
       />
-      <Status />
+      <Status items={items} />
     </div>
   );
 }
 
+function Status({ items }) {
+  if (!items.length)
+    return (
+      <p className="status">
+        <em>Your packing list is empty.</em>
+      </p>
+    );
+  const total = items.length;
+  const packed = items.filter((item) => item.packed).length;
+  const percentage = total === 0 ? 0 : Math.round((packed / total) * 100);
+  return (
+    <footer className="status">
+      <em>
+        {percentage === 100
+          ? "You are ready to go!"
+          : `You have packed ${percentage}% of your items.`}
+      </em>
+      <em>
+        {" "}
+        You have {total} items on your list, and you already packed {packed} (
+        {percentage}%){" "}
+      </em>
+    </footer>
+  );
+}
 function Logo() {
   return <h1> Far Away </h1>;
 }
@@ -102,10 +128,28 @@ function Item({ item, onDeleteItem, onToggleItem }) {
     </li>
   );
 }
-function Status() {
+function Status({ items }) {
+  if (!items.length)
+    return (
+      <p className="status">
+        <em>Your packing list is empty.</em>
+      </p>
+    );
+  const total = items.length;
+  const packed = items.filter((item) => item.packed).length;
+  const percentage = total === 0 ? 0 : Math.round((packed / total) * 100);
   return (
-    <footer>
-      <em> You have X items on your list, and you already packed X (X%) </em>
+    <footer className="status">
+      <em>
+        {percentage === 100
+          ? "You are ready to go!"
+          : `You have packed ${percentage}% of your items.`}
+      </em>
+      <em>
+        {" "}
+        You have {total} items on your list, and you already packed {packed} (
+        {percentage}%){" "}
+      </em>
     </footer>
   );
 }
