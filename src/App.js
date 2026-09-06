@@ -30,31 +30,6 @@ export default function App() {
   );
 }
 
-function Status({ items }) {
-  if (!items.length)
-    return (
-      <p className="status">
-        <em>Your packing list is empty.</em>
-      </p>
-    );
-  const total = items.length;
-  const packed = items.filter((item) => item.packed).length;
-  const percentage = total === 0 ? 0 : Math.round((packed / total) * 100);
-  return (
-    <footer className="status">
-      <em>
-        {percentage === 100
-          ? "You are ready to go!"
-          : `You have packed ${percentage}% of your items.`}
-      </em>
-      <em>
-        {" "}
-        You have {total} items on your list, and you already packed {packed} (
-        {percentage}%){" "}
-      </em>
-    </footer>
-  );
-}
 function Logo() {
   return <h1> Far Away </h1>;
 }
@@ -97,10 +72,20 @@ function Form({ onAddItem }) {
 }
 
 function PackingList({ items, onDeleteItem, onToggleItem }) {
+  const [sortBy, setSortBy] = useState("input");
+  let sortedItems;
+  if (sortBy === "input") sortedItems = items;
+
+  if (sortBy === "description")
+    sortedItems = items
+      .slice()
+      .sort((a, b) => a.description.localeCompare(b.description));
+  if (sortBy === "packed")
+    sortedItems = items.slice().sort((a, b) => a.packed - b.packed);
   return (
     <div className="list">
       <ul>
-        {items.map((item) => (
+        {sortedItems.map((item) => (
           <Item
             key={item.id}
             item={item}
@@ -109,6 +94,14 @@ function PackingList({ items, onDeleteItem, onToggleItem }) {
           />
         ))}
       </ul>
+      <div className="actions">
+        <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+          <option value="input">Input</option>
+          <option value="packed">Packed</option>
+          <option value="description">Sort by Description</option>
+        </select>
+        <button onClick={() => onDeleteItem(null)}>Clear All</button>
+      </div>
     </div>
   );
 }
@@ -128,6 +121,7 @@ function Item({ item, onDeleteItem, onToggleItem }) {
     </li>
   );
 }
+
 function Status({ items }) {
   if (!items.length)
     return (
