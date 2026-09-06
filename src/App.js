@@ -1,6 +1,10 @@
 import { useState } from "react";
+import { Logo } from "./logo";
+import { Form } from "./Form";
+import PackingList from "./PackingList";
+import { Item } from "./Item";
 
-export default function App() {
+function App() {
   const [items, setItems] = useState([]);
   const packedItems = items.filter((item) => item.packed).length;
   function handleAddItem(item) {
@@ -24,109 +28,17 @@ export default function App() {
         items={items}
         onDeleteItem={handleDeleteItem}
         onToggleItem={handleToggleItem}
+        handleClearAll={handleClearAll}
       />
       <Status items={items} />
     </div>
   );
 }
-
-function Logo() {
-  return <h1> Far Away </h1>;
-}
-
-function Form({ onAddItem }) {
-  const [description, setDescription] = useState("");
-  const [quantity, setQuantity] = useState(1);
-
-  function handleSubmit(event) {
-    event.preventDefault();
-    if (!description) return;
-
-    const newItem = { description, quantity, packed: false, id: Date.now() };
-    onAddItem(newItem);
-    setDescription("");
-    setQuantity(1);
-  }
-  return (
-    <form className="add-form" onSubmit={handleSubmit}>
-      <h3> What do you need for your trip?</h3>
-      <select
-        value={quantity}
-        onChange={(e) => setQuantity(Number(e.target.value))}
-      >
-        {Array.from({ length: 20 }, (_, i) => i + 1).map((num) => (
-          <option key={num} value={num}>
-            {num}
-          </option>
-        ))}
-      </select>
-      <input
-        type="text"
-        placeholder="Item..."
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-      />
-      <button>Add</button>
-    </form>
-  );
-}
+export default App;
 function handleClearAll() {
   const confirmed = window.confirm("Are you sure you want to clear all items?");
   if (!confirmed) return;
   setItems([]);
-}
-
-function PackingList({ items, onDeleteItem, onToggleItem }) {
-  const [sortBy, setSortBy] = useState("input");
-  let sortedItems;
-  if (sortBy === "input") sortedItems = items;
-
-  if (sortBy === "description")
-    sortedItems = items
-      .slice()
-      .sort((a, b) => a.description.localeCompare(b.description));
-  if (sortBy === "packed")
-    sortedItems = items.slice().sort((a, b) => a.packed - b.packed);
-  return (
-    <div className="list">
-      <ul>
-        {sortedItems.map((item) => (
-          <Item
-            key={item.id}
-            item={item}
-            onDeleteItem={onDeleteItem}
-            onToggleItem={onToggleItem}
-            onClearAll={handleClearAll}
-          />
-        ))}
-      </ul>
-      <div className="actions">
-        <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
-          <option value="input">Input</option>
-          <option value="packed">Packed</option>
-          <option value="description">Sort by Description</option>
-        </select>
-        <button onClick={handleClearAll}>Clear All</button>
-      </div>
-    </div>
-  );
-}
-
-function Item({ item, onDeleteItem, onToggleItem, onClearAll }) {
-  return (
-    <li>
-      <input
-        type="checkbox"
-        checked={item.packed}
-        onChange={() => onToggleItem(item.id)}
-      />
-      <span style={{ textDecoration: item.packed ? "line-through" : "none" }}>
-        {item.quantity} {item.description}
-      </span>
-      <button onClick={() => onDeleteItem(item.id)}> X </button>
-      <button onClick={onClearAll}>Clear All</button>
-    </li>
-  );
 }
 
 function Status({ items }) {
