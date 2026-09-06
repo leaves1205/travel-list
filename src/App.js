@@ -70,6 +70,11 @@ function Form({ onAddItem }) {
     </form>
   );
 }
+function handleClearAll() {
+  const confirmed = window.confirm("Are you sure you want to clear all items?");
+  if (!confirmed) return;
+  setItems([]);
+}
 
 function PackingList({ items, onDeleteItem, onToggleItem }) {
   const [sortBy, setSortBy] = useState("input");
@@ -91,6 +96,7 @@ function PackingList({ items, onDeleteItem, onToggleItem }) {
             item={item}
             onDeleteItem={onDeleteItem}
             onToggleItem={onToggleItem}
+            onClearAll={handleClearAll}
           />
         ))}
       </ul>
@@ -100,13 +106,13 @@ function PackingList({ items, onDeleteItem, onToggleItem }) {
           <option value="packed">Packed</option>
           <option value="description">Sort by Description</option>
         </select>
-        <button onClick={() => onDeleteItem(null)}>Clear All</button>
+        <button onClick={handleClearAll}>Clear All</button>
       </div>
     </div>
   );
 }
 
-function Item({ item, onDeleteItem, onToggleItem }) {
+function Item({ item, onDeleteItem, onToggleItem, onClearAll }) {
   return (
     <li>
       <input
@@ -118,6 +124,7 @@ function Item({ item, onDeleteItem, onToggleItem }) {
         {item.quantity} {item.description}
       </span>
       <button onClick={() => onDeleteItem(item.id)}> X </button>
+      <button onClick={onClearAll}>Clear All</button>
     </li>
   );
 }
